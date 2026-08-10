@@ -1,0 +1,4 @@
+Data broker name:,"Doing Business As (DBA), if applicable:",Data broker primary website:,Data broker primary contact email address:,Data broker primary phone number: [optional],Data broker primary street address:,Data broker city:,Data broker state:,Data broker zip code:,Data broker country:,Data broker's primary website that contains details on how consumers can exercise their CA Consumer Privacy rights:
+Acme Data LLC,Acme,https://acme-broker.test,privacy@acme-broker.test,555-0100,1 Main St,Austin,TX,78701,USA,https://acme-broker.test/privacy
+PeopleFinder Corp,,www.peoplefinder-example.com,privacy@peoplefinder-example.com,,,,,,USA,https://privacy.peoplefinder-example.com/rights
+No Email Broker Inc,,https://noemail.example,not-an-email,,,,,,USA,

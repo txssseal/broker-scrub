@@ -1,0 +1,18 @@
+# DSAR opt-out form agent: Chromium via Playwright, all in one Python 3.12 env
+# (the mcr playwright base splits pip vs the runtime interpreter, so we build our own).
+# pin bookworm: python:3.12-slim now tracks Debian 13 (trixie), which Playwright
+# 1.47 doesn't recognize -> it falls back to ubuntu20.04 font packages that don't
+# exist on trixie and apt fails. Bookworm (Debian 12) is natively supported.
+FROM python:3.12-slim-bookworm
+WORKDIR /app
+# browsers in a world-readable path so the non-root runtime user can launch them
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+COPY pyproject.toml README.md ./
+RUN pip install --no-cache-dir "click>=8.1" "requests>=2.31" "tldextract>=5.1" "playwright==1.47.0" \
+    && playwright install --with-deps chromium \
+    && chmod -R a+rX /ms-playwright
+COPY brokerscrub ./brokerscrub
+RUN pip install --no-cache-dir --no-deps .
+ENV BROKERSCRUB_HOME=/data
+ENTRYPOINT ["brokerscrub"]
+CMD ["optout", "--list"]

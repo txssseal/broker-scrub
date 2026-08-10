@@ -1,0 +1,48 @@
+services:
+  brokerscrub:
+    build:
+      context: .
+      target: base          # NOT the last stage (`test`); base is the daemon image
+    container_name: brokerscrub
+    restart: unless-stopped
+    init: true                        # tini reaps + forwards SIGTERM (clean, fast stop)
+    # run as the host user so bind-mounted ./data (config.toml + PII db) stays
+    # host-editable; override with `UID=$(id -u) GID=$(id -g) docker compose up`
+    user: "${UID:-1000}:${GID:-1000}"
+    volumes:
+      - ./data:/data
+    # default CMD polls IMAP every 15 min; it idles politely until
+    # data/config.toml has [imap] filled in
+
+  optout-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+    image: broker-scrub-optout-agent
+    profiles: [optout]
+    user: "${UID:-1000}:${GID:-1000}"
+    volumes:
+      - ./data:/data
+    # one-shot, e.g.:
+    #   docker compose --profile optout run --rm optout-agent optout --list
+    #   docker compose --profile optout run --rm optout-agent optout --limit 3   (dry-run)
+
+  greenmail:
+    image: greenmail/standalone:2.1.3
+    container_name: brokerscrub-greenmail
+    profiles: [test]
+    environment:
+      GREENMAIL_OPTS: >-
+        -Dgreenmail.setup.test.all
+        -Dgreenmail.hostname=0.0.0.0
+        -Dgreenmail.auth.disabled
+
+  e2e:
+    build:
+      context: .
+      target: test
+    profiles: [test]
+    depends_on: [greenmail]
+    environment:
+      GREENMAIL_HOST: greenmail
+    command: ["pytest", "-v", "--color=yes"]

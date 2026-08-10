@@ -1,0 +1,63 @@
+[project]
+name = "brokerscrub"
+version = "1.0.0"
+description = "Self-hosted personal data broker deletion machine: CPPA registry ingest, TDPSA/CCPA deletion demands, SMTP send, IMAP reply tracking, verification-link automation, statutory deadline tracking."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "broker-scrub contributors" }]
+keywords = ["privacy", "data-broker", "ccpa", "tdpsa", "gdpr", "deletion",
+            "incogni", "deleteme", "cloaked", "optery", "self-hosted"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Communications :: Email",
+    "Topic :: Internet",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "click>=8.1",
+    "requests>=2.31",
+    "tldextract>=5.1",
+]
+
+[project.urls]
+Homepage = "https://brokerscrub.com"
+Repository = "https://github.com/txssseal/broker-scrub"
+Issues = "https://github.com/txssseal/broker-scrub/issues"
+Changelog = "https://github.com/txssseal/broker-scrub/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.scripts]
+brokerscrub = "brokerscrub.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["brokerscrub*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "network: test needs outbound internet (real HTTPS); skips if offline",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+# E501: long lines are mostly legal citations/docstrings; E741: `l` loop vars are
+# fine here; UP031: the SQL "IN (%s)" % placeholders idiom is clearer as-is.
+ignore = ["E501", "E741", "UP031", "B008"]

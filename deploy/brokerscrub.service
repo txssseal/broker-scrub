@@ -1,0 +1,17 @@
+# Reply-watcher daemon as a systemd user service (native install, no Docker).
+# Install:
+#   mkdir -p ~/.config/systemd/user && cp deploy/brokerscrub.service ~/.config/systemd/user/
+#   loginctl enable-linger "$USER"        # so it runs when you're logged out
+#   systemctl --user daemon-reload && systemctl --user enable --now brokerscrub
+# Adjust ExecStart if `which brokerscrub` differs from ~/.local/bin.
+[Unit]
+Description=broker-scrub reply-watcher daemon
+After=network-online.target
+
+[Service]
+ExecStart=%h/.local/bin/brokerscrub run --interval 900
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,45 @@
+# Reference only. `brokerscrub init` generates a similar template at
+# ~/.brokerscrub/config.toml — edit THAT file (or ./data/config.toml if you run via
+# Docker with BROKERSCRUB_HOME=/data). Contains credentials + PII: keep it out of
+# git and owner-only (`brokerscrub harden`). The [agent] block at the bottom is
+# read only by the optional opt-out form agent, not the core config loader.
+
+[identity]
+full_name = ""            # your full legal name
+aliases = []              # other names brokers list you under, e.g. ["Jane Public", "Jane Q Public"]
+emails = [""]             # ALL emails a broker might hold on you (more = better matches)
+phones = []               # e.g. ["+1 555 0100"] — brokers key on these
+addresses = []            # current + every former address, one string each (biggest match key)
+state = "TX"              # your state of residence (drives which statute you cite)
+dob = ""                  # optional "YYYY-MM-DD"; some brokers require it to match records
+
+[smtp]
+host = "smtp.gmail.com"   # Gmail: create an app password (myaccount.google.com/apppasswords)
+port = 587
+username = ""
+password = ""             # 16-char app password (NOT your account password)
+from_addr = ""            # the address demands are sent from (must be a mailbox you own)
+use_tls = true
+use_ssl = false
+
+[imap]
+host = "imap.gmail.com"
+port = 993
+username = ""
+password = ""
+folder = "INBOX"
+use_ssl = true
+
+[send]
+throttle_per_hour = 60    # keep modest — burst-sending gets you spam-filtered
+jitter_seconds = 20
+daily_cap = 100           # stay under your provider's daily limit (Gmail free = 500)
+plus_addressing = true    # Gmail: replies thread to you+bs-<token>@gmail.com
+
+[verify]
+timeout_seconds = 20
+max_redirects = 5
+
+# [agent]  # optional — only needed for the autonomous opt-out form agent (phase 2)
+# anthropic_api_key = ""   # form reasoning
+# captcha_solver = ""      # 2captcha / CapSolver API key

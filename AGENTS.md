@@ -93,15 +93,19 @@ brokerscrub send --live       # send, throttled by [send] throttle_per_hour/dail
 brokerscrub run &             # reply-watcher daemon (or install deploy/brokerscrub.service)
 ```
 
-Automate the drain + recheck with cron (flock-guarded wrappers in `deploy/`):
+Automate the drain + follow-up + recheck with cron (flock-guarded wrappers in
+`deploy/`). The daily follow-up job auto-fires the firm TDPSA reply at any new
+portal-deflecting broker (deduped in-app), so deflections don't need babysitting:
 
 ```sh
 ( crontab -l 2>/dev/null; echo "0 * * * * $HOME/broker-scrub/deploy/send-daily.sh" ) | crontab -
+( crontab -l 2>/dev/null; echo "0 12 * * * $HOME/broker-scrub/deploy/followup-daily.sh" ) | crontab -
 ( crontab -l 2>/dev/null; echo "0 9 1 * * $HOME/broker-scrub/deploy/recheck-monthly.sh" ) | crontab -
 ```
 
 (Docker: `make up` for the daemon; cron `make cli ARGS="send --live"` /
-`make cli ARGS="recheck --reopen"` from the repo dir.)
+`make cli ARGS="followup --live"` / `make cli ARGS="recheck --reopen"` from the
+repo dir.)
 
 ## 5. Operate
 

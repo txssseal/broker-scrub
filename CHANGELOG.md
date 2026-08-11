@@ -3,6 +3,14 @@
 All notable changes are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versioning is [SemVer](https://semver.org/).
 
+## Unreleased
+
+### Added
+- `deploy/followup-daily.sh` cron wrapper so portal-deflection follow-ups run
+  automatically (daily, flock-guarded, deduped in-app — each broker gets exactly
+  one follow-up ever). Wired into the README + AGENTS.md "run continuously" cron
+  set alongside the send drain and monthly recheck.
+
 ## 1.0.0 - 2026-08-10
 
 Initial public release.

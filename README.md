@@ -125,16 +125,19 @@ loginctl enable-linger "$USER"
 systemctl --user daemon-reload
 systemctl --user enable --now brokerscrub
 
-# hourly send drain + monthly recheck — the deploy/*.sh wrappers add an flock
-# guard so overlapping runs can't double-send:
+# hourly send drain + daily follow-up + monthly recheck — the deploy/*.sh
+# wrappers add an flock guard so overlapping runs can't double-send:
 ( crontab -l 2>/dev/null; echo "0 * * * * $HOME/broker-scrub/deploy/send-daily.sh" ) | crontab -
+( crontab -l 2>/dev/null; echo "0 12 * * * $HOME/broker-scrub/deploy/followup-daily.sh" ) | crontab -
 ( crontab -l 2>/dev/null; echo "0 9 1 * * $HOME/broker-scrub/deploy/recheck-monthly.sh" ) | crontab -
 ```
 
 The hourly job drains up to `daily_cap` demands/day; the daemon catches replies;
-the monthly job reopens decayed deletions. (Docker users: `make up` for the
-daemon, and cron `make cli ARGS="send --live"` / `make cli ARGS="recheck --reopen"`
-from the repo dir for the scheduled jobs.)
+the daily follow-up job fires the firm TDPSA reply at any *new* portal-deflecting
+broker (deduped in-app, so each broker gets exactly one); the monthly job reopens
+decayed deletions. (Docker users: `make up` for the daemon, and cron
+`make cli ARGS="send --live"` / `make cli ARGS="followup --live"` /
+`make cli ARGS="recheck --reopen"` from the repo dir for the scheduled jobs.)
 
 ## Reply trust (why a spoofed email can't fake a deletion)
 
